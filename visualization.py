@@ -13,7 +13,7 @@ def update_roi_video(filtered_roi, roi_canvas):
     roi_img = Image.fromarray(roi_rgb)
     roi_img_tk = ImageTk.PhotoImage(image=roi_img)
     roi_canvas.create_image(0, 0, image=roi_img_tk, anchor=tk.NW)
-    roi_canvas.image = roi_img_tk  # Keep a reference
+    roi_canvas.image = roi_img_tk
 
 def update_webcam_video(frame, video_canvas):
     # Convert the frame to PhotoImage and display it in the video canvas (even when forehead not detected)
@@ -21,7 +21,7 @@ def update_webcam_video(frame, video_canvas):
     img = Image.fromarray(frame_rgb)
     img_tk = ImageTk.PhotoImage(image=img)
     video_canvas.create_image(0, 0, image=img_tk, anchor=tk.NW)
-    video_canvas.image = img_tk  # Keep a reference
+    video_canvas.image = img_tk
 
 def update_plot(line, plot_canvas, ax, frame_count, x_data, y_data):
     if len(x_data) > 0:
