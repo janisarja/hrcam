@@ -7,7 +7,7 @@ import tkinter as tk
 from tkinter import ttk
 from PIL import Image, ImageTk
 from face_detection import detect_face, extract_roi
-from processing import filter_roi, process_signal
+from processing import filter_roi, process_signal, calculate_bpm
 from plot import Plot
 
 def update_roi_video(filtered_roi, roi_canvas):
@@ -99,9 +99,12 @@ def setup_gui(root, filter_settings):
     heart_rate_frame = ttk.Frame(right_frame, relief=tk.SUNKEN)
     heart_rate_frame.pack(fill=tk.BOTH, expand=True)
 
-    return video_canvas, roi_canvas, plot_grid_frame, heart_rate_frame
+    heart_rate_label = tk.Label(heart_rate_frame, text="-- bpm", font=("Arial", 16))
+    heart_rate_label.pack(pady=10)
 
-def update_gui(root, cap, video_canvas, roi_canvas, plots, start_time, x_data, y_data, filter_settings):
+    return video_canvas, roi_canvas, plot_grid_frame, heart_rate_frame, heart_rate_label
+
+def update_gui(root, cap, video_canvas, roi_canvas, plots, start_time, x_data, y_data, filter_settings, heart_rate_label):
     ret, frame = cap.read()
     if not ret:
         root.quit()
@@ -122,12 +125,17 @@ def update_gui(root, cap, video_canvas, roi_canvas, plots, start_time, x_data, y
 
         process_signal(y_data, filter_settings)
 
-        # Update all plots
+        # Update signal plots
         for i in range(len(plots)):
             plots[i].update(elapsed_time, y_data[i][-1])
+
+        bpm = calculate_bpm(x_data, y_data, filter_settings)
+
+        if bpm is not None:
+            heart_rate_label.config(text=f"{int(bpm)} bpm")
 
         update_roi_video(filtered_roi, roi_canvas)
 
     update_webcam_video(frame, video_canvas)
 
-    root.after(10, update_gui, root, cap, video_canvas, roi_canvas, plots, start_time, x_data, y_data, filter_settings)
+    root.after(10, update_gui, root, cap, video_canvas, roi_canvas, plots, start_time, x_data, y_data, filter_settings, heart_rate_label)
