@@ -1,6 +1,6 @@
 import cv2
 import tkinter as tk
-from visualization import setup_gui, update_gui
+from visualization import setup_gui, update_gui, create_plots
 
 def main():
     root = tk.Tk()
@@ -12,11 +12,20 @@ def main():
 
     frame_count = 0
     x_data = []
+    y_data_processed = [[]]
     y_data = []
 
-    ax, line, video_canvas, roi_canvas, plot_canvas = setup_gui(root, cap)
+    video_canvas, roi_canvas, plot_grid_frame, heart_rate_frame = setup_gui(root)
 
-    update_gui(root, cap, ax, line, video_canvas, roi_canvas, plot_canvas, frame_count, x_data, y_data)
+    # Default values for each filter parameters.
+    filter_settings = []
+    savgol_settings = {'use': tk.BooleanVar(value=True), 'window': tk.IntVar(value=31), 'polyorder': tk.IntVar(value=3)}
+    filter_settings.append(savgol_settings)
+    
+
+    plots = create_plots(plot_grid_frame, filter_settings)
+
+    update_gui(root, cap, video_canvas, roi_canvas, plots, frame_count, x_data, y_data_processed, y_data, filter_settings)
 
     root.mainloop()
 
