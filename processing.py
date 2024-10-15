@@ -1,11 +1,12 @@
 import cv2
 from scipy.signal import savgol_filter
 
-def filter_roi(roi):
+def filter_roi(roi, use_blurring):
     # Extract red channel and filter with median blurring and min-max normalization
     red_channel = roi[:, :, 2]
-    blurred_roi = cv2.medianBlur(red_channel, 5)
-    normalized_roi = cv2.normalize(blurred_roi, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX)
+    if use_blurring:
+        red_channel = cv2.medianBlur(red_channel, 5)
+    normalized_roi = cv2.normalize(red_channel, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX)
     return normalized_roi
 
 def process_signal(y_data, filter_settings):

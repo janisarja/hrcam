@@ -61,7 +61,7 @@ def create_plots(parent_frame, filter_settings):
 
     return plots
 
-def setup_gui(root):
+def setup_gui(root, filter_settings):
     root.title("HRCam")
 
     # Create three main sections using frames
@@ -83,6 +83,9 @@ def setup_gui(root):
     # Video feeds on the left side
     video_canvas = tk.Canvas(left_frame, width=640, height=480)
     video_canvas.pack()
+
+    blur_toggle_button = tk.Checkbutton(left_frame, text="Use Median Blurring", variable=filter_settings[0]['use'])
+    blur_toggle_button.pack()
 
     roi_canvas = tk.Canvas(left_frame, width=320, height=240)
     roi_canvas.pack()
@@ -107,7 +110,7 @@ def update_gui(root, cap, video_canvas, roi_canvas, plots, frame_count, x_data, 
 
     if face:
         roi = extract_roi(frame, grey_channel, face)
-        filtered_roi = filter_roi(roi)
+        filtered_roi = filter_roi(roi, filter_settings[0]['use'].get())
         average_intensity = np.mean(filtered_roi)
 
         # Update the signal data
