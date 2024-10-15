@@ -12,20 +12,22 @@ def main():
 
     frame_count = 0
     x_data = []
-    y_data_processed = [[]]
-    y_data = []
+    y_data = [[], []]
 
     video_canvas, roi_canvas, plot_grid_frame, heart_rate_frame = setup_gui(root)
 
     # Default values for each filter parameters.
     filter_settings = []
-    savgol_settings = {'use': tk.BooleanVar(value=True), 'window': tk.IntVar(value=31), 'polyorder': tk.IntVar(value=3)}
-    filter_settings.append(savgol_settings)
     
+    median_blur_settings = {'use': tk.BooleanVar(value=True)}
+    savgol_settings = {'use': tk.BooleanVar(value=True), 'window': tk.IntVar(value=31), 'polyorder': tk.IntVar(value=3)}
+
+    filter_settings.append(median_blur_settings)
+    filter_settings.append(savgol_settings)
 
     plots = create_plots(plot_grid_frame, filter_settings)
 
-    update_gui(root, cap, video_canvas, roi_canvas, plots, frame_count, x_data, y_data_processed, y_data, filter_settings)
+    update_gui(root, cap, video_canvas, roi_canvas, plots, frame_count, x_data, y_data, filter_settings)
 
     root.mainloop()
 
