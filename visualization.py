@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import time
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import tkinter as tk
@@ -100,10 +101,12 @@ def setup_gui(root, filter_settings):
 
     return video_canvas, roi_canvas, plot_grid_frame, heart_rate_frame
 
-def update_gui(root, cap, video_canvas, roi_canvas, plots, frame_count, x_data, y_data, filter_settings):
+def update_gui(root, cap, video_canvas, roi_canvas, plots, start_time, x_data, y_data, filter_settings):
     ret, frame = cap.read()
     if not ret:
         root.quit()
+
+    elapsed_time = time.time() - start_time
     
     grey_channel = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     face = detect_face(grey_channel)
@@ -114,18 +117,17 @@ def update_gui(root, cap, video_canvas, roi_canvas, plots, frame_count, x_data, 
         average_intensity = np.mean(filtered_roi)
 
         # Update the signal data
-        frame_count += 1
-        x_data.append(frame_count)
+        x_data.append(elapsed_time)
         y_data[0].append(average_intensity)
 
         process_signal(y_data, filter_settings)
 
         # Update all plots
         for i in range(len(plots)):
-            plots[i].update(y_data[i][-1])
+            plots[i].update(elapsed_time, y_data[i][-1])
 
         update_roi_video(filtered_roi, roi_canvas)
 
     update_webcam_video(frame, video_canvas)
 
-    root.after(10, update_gui, root, cap, video_canvas, roi_canvas, plots, frame_count, x_data, y_data, filter_settings)
+    root.after(10, update_gui, root, cap, video_canvas, roi_canvas, plots, start_time, x_data, y_data, filter_settings)

@@ -1,5 +1,6 @@
 import cv2
 import tkinter as tk
+import time
 from visualization import setup_gui, update_gui, create_plots
 
 def main():
@@ -27,7 +28,9 @@ def main():
 
     plots = create_plots(plot_grid_frame, filter_settings)
 
-    update_gui(root, cap, video_canvas, roi_canvas, plots, frame_count, x_data, y_data, filter_settings)
+    start_time = time.time()
+
+    update_gui(root, cap, video_canvas, roi_canvas, plots, start_time, x_data, y_data, filter_settings)
 
     root.mainloop()
 

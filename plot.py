@@ -19,18 +19,16 @@ class Plot:
 
         self.x_data = []
         self.y_data = []
-        self.frame_count = 0
 
-    def update(self, new_value):
+    def update(self, x_value, y_value):
         # Update plot data
-        self.frame_count += 1
-        self.x_data.append(self.frame_count)
-        self.y_data.append(new_value)
+        self.x_data.append(x_value)
+        self.y_data.append(y_value)
         
         # Update plot line
         self.line.set_xdata(self.x_data)
         self.line.set_ydata(self.y_data)
-        self.ax.set_xlim(max(0, self.frame_count - 100), self.frame_count)
+        self.ax.set_xlim(max(0, x_value - 20), x_value)
         
         # Update y-axis limits dynamically
         if len(self.x_data) % 20 == 0:
