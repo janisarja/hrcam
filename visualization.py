@@ -31,30 +31,56 @@ def create_plots(parent_frame, filter_settings):
 
     # 1. Unfiltered Signal
     raw_plot_frame = ttk.Frame(parent_frame)
-    raw_plot = Plot(raw_plot_frame, title=" 1. Unfiltered Signal")
+    raw_plot = Plot(raw_plot_frame, title=" 1. Unfiltered Signal", y_label="Average Red Intensity")
 
     raw_plot_frame.grid(row=0, column=0, padx=5, pady=5)
 
     plots.append(raw_plot)
 
-    # 2. Savgol Filter
-    savgol_plot_frame = ttk.Frame(parent_frame)
-    savgol_plot = Plot(savgol_plot_frame, title="2. Savitzky-Golay Filter")
+    # 2. Bandpass Filter
+    bandpass_plot_frame = ttk.Frame(parent_frame)
+    bandpass_plot = Plot(bandpass_plot_frame, title="2. Bandpass Filter", y_label="Filtered Red Intensity")
 
-    savgol_toggle_button = tk.Checkbutton(savgol_plot_frame, text="Use Savitzky-Golay Filtering", variable=filter_settings[1]['use'])
+    bandpass_toggle_button = tk.Checkbutton(bandpass_plot_frame, text="Use Bandpass Filtering", variable=filter_settings[1]['use'])
+    bandpass_toggle_button.grid(row=1, column=0, columnspan=2, sticky="w")
+    
+    bandpass_window_label = tk.Label(bandpass_plot_frame, text="Lowcut")
+    bandpass_window_label.grid(row=1, column=0, sticky="e")
+    bandpass_window_selector = tk.Spinbox(bandpass_plot_frame, from_=0.5, to=1.0, increment=0.1, width=5, textvariable=filter_settings[1]['lowcut'])
+    bandpass_window_selector.grid(row=1, column=1, sticky="w")
+
+    bandpass_polyorder_label = tk.Label(bandpass_plot_frame, text="Highcut")
+    bandpass_polyorder_label.grid(row=2, column=0, sticky="e")
+    bandpass_polyorder_selector = tk.Spinbox(bandpass_plot_frame, from_=2.0, to=4.0, increment=0.1, width=5, textvariable=filter_settings[1]['highcut'])
+    bandpass_polyorder_selector.grid(row=2, column=1, sticky="w")
+
+    bandpass_polyorder_label = tk.Label(bandpass_plot_frame, text="Order")
+    bandpass_polyorder_label.grid(row=3, column=0, sticky="e")
+    bandpass_polyorder_selector = tk.Spinbox(bandpass_plot_frame, from_=4, to=8, width=5, textvariable=filter_settings[1]['order'])
+    bandpass_polyorder_selector.grid(row=3, column=1, sticky="w")
+
+    bandpass_plot_frame.grid(row=1, column=0, padx=5, pady=5)
+
+    plots.append(bandpass_plot)
+
+    # 3. Savgol Filter
+    savgol_plot_frame = ttk.Frame(parent_frame)
+    savgol_plot = Plot(savgol_plot_frame, title="3. Savitzky-Golay Filter", y_label="Filtered Red Intensity")
+
+    savgol_toggle_button = tk.Checkbutton(savgol_plot_frame, text="Use Savitzky-Golay Filtering", variable=filter_settings[2]['use'])
     savgol_toggle_button.grid(row=1, column=0, columnspan=2, sticky="w")
     
     savgol_window_label = tk.Label(savgol_plot_frame, text="Window Size")
     savgol_window_label.grid(row=1, column=0, sticky="e")
-    savgol_window_selector = tk.Spinbox(savgol_plot_frame, from_=6, to=51, width=5, textvariable=filter_settings[1]['window'])
+    savgol_window_selector = tk.Spinbox(savgol_plot_frame, from_=6, to=51, width=5, textvariable=filter_settings[2]['window'])
     savgol_window_selector.grid(row=1, column=1, sticky="w")
 
     savgol_polyorder_label = tk.Label(savgol_plot_frame, text="Polyorder")
     savgol_polyorder_label.grid(row=2, column=0, sticky="e")
-    savgol_polyorder_selector = tk.Spinbox(savgol_plot_frame, from_=2, to=5, width=5, textvariable=filter_settings[1]['polyorder'])
+    savgol_polyorder_selector = tk.Spinbox(savgol_plot_frame, from_=2, to=5, width=5, textvariable=filter_settings[2]['polyorder'])
     savgol_polyorder_selector.grid(row=2, column=1, sticky="w")
 
-    savgol_plot_frame.grid(row=1, column=0, padx=5, pady=5)
+    savgol_plot_frame.grid(row=2, column=0, padx=5, pady=5)
 
     plots.append(savgol_plot)
 

@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 class Plot:
-    def __init__(self, parent_frame, title="Plot", y_label="Average Red Intensity", width=5, height=4):
+    def __init__(self, parent_frame, title="Plot", y_label="Red Intensity", width=5, height=4):
         # Create a figure and axis
         self.fig, self.ax = plt.subplots(figsize=(width, height))
         self.line, = self.ax.plot([], [])
@@ -32,8 +32,8 @@ class Plot:
         
         # Update y-axis limits dynamically
         if len(self.x_data) % 20 == 0:
-            if not None in self.y_data[-100:]:
-                self.ax.set_ylim(min(self.y_data[-100:]) - 2, max(self.y_data[-100:]) + 2)
+            if not None in self.y_data[-50:]:
+                self.ax.set_ylim(min(self.y_data[-50:]) - 1, max(self.y_data[-50:]) + 1)
         
         # Redraw the canvas
         self.canvas.draw()

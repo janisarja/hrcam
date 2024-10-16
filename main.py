@@ -11,17 +11,25 @@ def main():
         print("Error: Could not open video.")
         exit()
 
-    frame_count = 0
     x_data = []
-    y_data = [[], []]
+    y_data = [[], [], []]
 
     # Default values for each filter parameters.
     filter_settings = []
 
     median_blur_settings = {'use': tk.BooleanVar(value=True)}
-    savgol_settings = {'use': tk.BooleanVar(value=True), 'window': tk.IntVar(value=31), 'polyorder': tk.IntVar(value=3)}
+    bandpass_settings = {
+        'use': tk.BooleanVar(value=True), 
+        'lowcut': tk.StringVar(value=0.7), 
+        'highcut': tk.StringVar(value=3.0), 
+        'order': tk.IntVar(value=6)}
+    savgol_settings = {
+        'use': tk.BooleanVar(value=True), 
+        'window': tk.IntVar(value=31), 
+        'polyorder': tk.IntVar(value=3)}
 
     filter_settings.append(median_blur_settings)
+    filter_settings.append(bandpass_settings)
     filter_settings.append(savgol_settings)
 
     video_canvas, roi_canvas, plot_grid_frame, heart_rate_label, hr_plot = setup_gui(root, filter_settings)
