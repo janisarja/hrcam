@@ -24,13 +24,13 @@ def main():
     filter_settings.append(median_blur_settings)
     filter_settings.append(savgol_settings)
 
-    video_canvas, roi_canvas, plot_grid_frame, heart_rate_frame, heart_rate_label = setup_gui(root, filter_settings)
+    video_canvas, roi_canvas, plot_grid_frame, heart_rate_label, hr_plot = setup_gui(root, filter_settings)
 
     plots = create_plots(plot_grid_frame, filter_settings)
 
     start_time = time.time()
 
-    update_gui(root, cap, video_canvas, roi_canvas, plots, start_time, x_data, y_data, filter_settings, heart_rate_label)
+    update_gui(root, cap, video_canvas, roi_canvas, plots, start_time, x_data, y_data, filter_settings, heart_rate_label, hr_plot)
 
     root.mainloop()
 

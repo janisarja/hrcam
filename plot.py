@@ -8,7 +8,7 @@ class Plot:
         self.line, = self.ax.plot([], [])
         self.ax.set_xlim(0, 100)
         self.ax.set_ylim(0, 255)
-        self.ax.set_xlabel('Frame Count')
+        self.ax.set_xlabel('Time (s)')
         self.ax.set_ylabel(y_label)
         self.ax.set_title(title)
         

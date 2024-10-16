@@ -31,7 +31,6 @@ def calculate_bpm(x_data, y_data, filter_settings):
     for i in range(len(filter_settings)):
         if filter_settings[i]['use'].get():
             most_filtered = i
-    print(most_filtered)
 
     if len(y_data[most_filtered]) > 30:  # Ensure enough data for peak detection
         peaks, _ = find_peaks(y_data[most_filtered][-30:], distance=3)  # Adjust 'distance' based on expected heart rate
