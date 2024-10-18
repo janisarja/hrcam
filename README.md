@@ -1,6 +1,6 @@
 # hrcam - Webcam Heart Rate Detection
 
-This project captures webcam video and estimates heart rate based on changes in the color intensity of the forehead skin. It utilizes OpenCV for video processing and dlib for facial landmark detection. The UI includes options to change the parameters of the signal processing techniques used to see the changes in real time and test different parameter for optimal accuracy.
+This project captures webcam video and estimates heart rate based on changes in the color intensity of the forehead skin. It utilizes OpenCV for video processing and dlib for facial landmark detection. The UI includes options to change the parameters of the signal processing techniques used to see the changes in real time and test different parameters for optimal accuracy.
 
 ## How It Works
 
