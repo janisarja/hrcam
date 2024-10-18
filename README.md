@@ -1,6 +1,6 @@
 # hrcam - Webcam Heart Rate Detection
 
-This project captures webcam video and estimates heart rate based on changes in the color intensity of the forehead skin. It utilizes OpenCV for video processing and dlib for facial landmark detection, along with Matplotlib to visualize the heart rate signal in real time. The UI includes options to change the parameters of the signal processing techniques used to see the changes in real time and test different parameter for optimal accuracy.
+This project captures webcam video and estimates heart rate based on changes in the color intensity of the forehead skin. It utilizes OpenCV for video processing and dlib for facial landmark detection. The UI includes options to change the parameters of the signal processing techniques used to see the changes in real time and test different parameter for optimal accuracy.
 
 ## How It Works
 
@@ -23,10 +23,11 @@ This project requires the following Python libraries:
 - **Matplotlib**: For live plotting of the heart rate signal.
 - **Pillow**: For image handling and converting formats.
 - **Tkinter**: For the GUI (Graphical User Interface) used to display the webcam feed and plot.
+- **SciPy**: For signal processing, including bandpass filtering and Savitzky-Golay filtering.
 
 ### Installing Dependencies
 
 You can install the required dependencies using `pip`:
 
 ```bash
-pip install opencv-python-headless dlib numpy matplotlib pillow
+pip install opencv-python-headless dlib numpy matplotlib pillow scipy
