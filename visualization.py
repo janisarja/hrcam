@@ -41,22 +41,22 @@ def create_plots(parent_frame, filter_settings):
     bandpass_plot_frame = ttk.Frame(parent_frame)
     bandpass_plot = Plot(bandpass_plot_frame, title="2. Bandpass Filter", y_label="Filtered Red Intensity")
 
-    bandpass_toggle_button = tk.Checkbutton(bandpass_plot_frame, text="Use Bandpass Filtering", variable=filter_settings[1]['use'])
+    bandpass_toggle_button = tk.Checkbutton(bandpass_plot_frame, text="Use Bandpass Filtering", variable=filter_settings['bandpass']['use'])
     bandpass_toggle_button.grid(row=1, column=0, columnspan=2, sticky="w")
     
     bandpass_window_label = tk.Label(bandpass_plot_frame, text="Lowcut")
     bandpass_window_label.grid(row=1, column=0, sticky="e")
-    bandpass_window_selector = tk.Spinbox(bandpass_plot_frame, from_=0.5, to=1.0, increment=0.1, width=5, textvariable=filter_settings[1]['lowcut'])
+    bandpass_window_selector = tk.Spinbox(bandpass_plot_frame, from_=0.5, to=1.0, increment=0.1, width=5, textvariable=filter_settings['bandpass']['lowcut'])
     bandpass_window_selector.grid(row=1, column=1, sticky="w")
 
     bandpass_polyorder_label = tk.Label(bandpass_plot_frame, text="Highcut")
     bandpass_polyorder_label.grid(row=2, column=0, sticky="e")
-    bandpass_polyorder_selector = tk.Spinbox(bandpass_plot_frame, from_=2.0, to=4.0, increment=0.1, width=5, textvariable=filter_settings[1]['highcut'])
+    bandpass_polyorder_selector = tk.Spinbox(bandpass_plot_frame, from_=2.0, to=4.0, increment=0.1, width=5, textvariable=filter_settings['bandpass']['highcut'])
     bandpass_polyorder_selector.grid(row=2, column=1, sticky="w")
 
     bandpass_polyorder_label = tk.Label(bandpass_plot_frame, text="Order")
     bandpass_polyorder_label.grid(row=3, column=0, sticky="e")
-    bandpass_polyorder_selector = tk.Spinbox(bandpass_plot_frame, from_=4, to=8, width=5, textvariable=filter_settings[1]['order'])
+    bandpass_polyorder_selector = tk.Spinbox(bandpass_plot_frame, from_=4, to=8, width=5, textvariable=filter_settings['bandpass']['order'])
     bandpass_polyorder_selector.grid(row=3, column=1, sticky="w")
 
     bandpass_plot_frame.grid(row=1, column=0, padx=5, pady=5)
@@ -67,17 +67,17 @@ def create_plots(parent_frame, filter_settings):
     savgol_plot_frame = ttk.Frame(parent_frame)
     savgol_plot = Plot(savgol_plot_frame, title="3. Savitzky-Golay Filter", y_label="Filtered Red Intensity")
 
-    savgol_toggle_button = tk.Checkbutton(savgol_plot_frame, text="Use Savitzky-Golay Filtering", variable=filter_settings[2]['use'])
+    savgol_toggle_button = tk.Checkbutton(savgol_plot_frame, text="Use Savitzky-Golay Filtering", variable=filter_settings['savgol']['use'])
     savgol_toggle_button.grid(row=1, column=0, columnspan=2, sticky="w")
     
     savgol_window_label = tk.Label(savgol_plot_frame, text="Window Size")
     savgol_window_label.grid(row=1, column=0, sticky="e")
-    savgol_window_selector = tk.Spinbox(savgol_plot_frame, from_=6, to=51, width=5, textvariable=filter_settings[2]['window'])
+    savgol_window_selector = tk.Spinbox(savgol_plot_frame, from_=6, to=51, width=5, textvariable=filter_settings['savgol']['window'])
     savgol_window_selector.grid(row=1, column=1, sticky="w")
 
     savgol_polyorder_label = tk.Label(savgol_plot_frame, text="Polyorder")
     savgol_polyorder_label.grid(row=2, column=0, sticky="e")
-    savgol_polyorder_selector = tk.Spinbox(savgol_plot_frame, from_=2, to=5, width=5, textvariable=filter_settings[2]['polyorder'])
+    savgol_polyorder_selector = tk.Spinbox(savgol_plot_frame, from_=2, to=5, width=5, textvariable=filter_settings['savgol']['polyorder'])
     savgol_polyorder_selector.grid(row=2, column=1, sticky="w")
 
     savgol_plot_frame.grid(row=2, column=0, padx=5, pady=5)
@@ -115,7 +115,7 @@ def setup_gui(root, filter_settings):
     video_canvas = tk.Canvas(left_frame, width=640, height=480)  # Full-size video
     video_canvas.pack()
 
-    blur_toggle_button = tk.Checkbutton(left_frame, text="Use Median Blurring", variable=filter_settings[0]['use'])
+    blur_toggle_button = tk.Checkbutton(left_frame, text="Use Median Blurring", variable=filter_settings['blur']['use'])
     blur_toggle_button.pack()
 
     roi_canvas = tk.Canvas(left_frame, width=320, height=240)
@@ -163,7 +163,7 @@ def setup_gui(root, filter_settings):
 
     return video_canvas, roi_canvas, plot_grid_frame, heart_rate_label, hr_plot
 
-def update_gui(root, cap, video_canvas, roi_canvas, plots, start_time, x_data, y_data, filter_settings, heart_rate_label, hr_plot):
+def update_gui(root, cap, video_canvas, roi_canvas, plots, start_time, x_data, y_data, filter_settings, heart_rate_label, fps):
     ret, frame = cap.read()
     if not ret:
         root.quit()
@@ -175,28 +175,30 @@ def update_gui(root, cap, video_canvas, roi_canvas, plots, start_time, x_data, y
 
     if face:
         roi = extract_roi(frame, grey_channel, face)
-        filtered_roi = filter_roi(roi, filter_settings[0]['use'].get())
+        filtered_roi = filter_roi(roi, filter_settings['blur']['use'].get())
         average_intensity = np.mean(filtered_roi)
 
         # Update the signal data
         x_data.append(elapsed_time)
-        y_data[0].append(average_intensity)
+        y_data['raw'].append(average_intensity)
 
-        process_signal(y_data, filter_settings)
+        process_signal(y_data, filter_settings, fps)
 
         # Update signal plots
-        for i in range(len(plots)):
-            plots[i].update(elapsed_time, y_data[i][-1])
+        plots['raw'].update(x_data, y_data['raw'])
+        plots['bandpass'].update(x_data, y_data['bandpass'])
+        plots['savgol'].update(x_data, y_data['savgol'])
 
         bpm = calculate_bpm(x_data, y_data, filter_settings)
 
         if bpm is not None:
             heart_rate_label.config(text=f"{int(bpm)} bpm")
 
-        hr_plot.update(elapsed_time, bpm)
+        y_data['bpm'].append(bpm)
+        plots['bpm'].update(x_data, y_data['bpm'])
 
         update_roi_video(filtered_roi, roi_canvas)
 
     update_webcam_video(frame, video_canvas)
 
-    root.after(10, update_gui, root, cap, video_canvas, roi_canvas, plots, start_time, x_data, y_data, filter_settings, heart_rate_label, hr_plot)
+    root.after(1000 // fps, update_gui, root, cap, video_canvas, roi_canvas, plots, start_time, x_data, y_data, filter_settings, heart_rate_label, fps)

@@ -10,48 +10,56 @@ def filter_roi(roi, use_blurring):
     normalized_roi = cv2.normalize(red_channel, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX)
     return normalized_roi
 
-def savgol(y_data, window, polyorder):
-    if len(y_data[1]) >= window and not (None in y_data[1][-window:]):
-        smoothed_signal = savgol_filter(y_data[1][-window:], window_length=window, polyorder=polyorder)
-        y_data[2].append(smoothed_signal[-1])
+def savgol(y_data, filter_settings, window, polyorder):
+    # Check if bandpass filtering is used
+    if filter_settings['bandpass']['use'].get():
+        data = 'bandpass'
     else:
-        y_data[2].append(None)
+        data = 'raw'
 
-def bandpass(y_data, lowcut, highcut, fs, order):
-    if len(y_data[0]) > max(order + 1, 39):
-        nyquist = 0.5 * fs
+    if len(y_data[data]) >= window and not (None in y_data[data][-window:]):
+        smoothed_signal = savgol_filter(y_data[data][-window:], window_length=window, polyorder=polyorder)
+        y_data['savgol'].append(smoothed_signal[-1])
+    else:
+        y_data['savgol'].append(None)
+
+def bandpass(y_data, lowcut, highcut, fps, order):
+    if len(y_data['raw']) > 51:
+        nyquist = 0.5 * fps
         low = lowcut / nyquist
         high = highcut / nyquist
         b, a = butter(order, [low, high], btype='band')
-        y_data[1] = filtfilt(b, a, y_data[0])
+        y_data['bandpass'].append(filtfilt(b, a, y_data['raw'])[-1])
     else:
-        y_data[1].append(None)
+        y_data['bandpass'].append(None)
 
-def process_signal(y_data, filter_settings):
-    fs = 30
-    # Applpy bandpass filtering
-    if filter_settings[1]['use'].get():
-        lowcut = float(filter_settings[1]['lowcut'].get())
-        highcut = float(filter_settings[1]['highcut'].get())
-        order = filter_settings[1]['order'].get()
-        bandpass(y_data, lowcut, highcut, fs, order)
+def process_signal(y_data, filter_settings, fps):
+    # Apply bandpass filtering
+    if filter_settings['bandpass']['use'].get():
+        lowcut = float(filter_settings['bandpass']['lowcut'].get())
+        highcut = float(filter_settings['bandpass']['highcut'].get())
+        order = filter_settings['bandpass']['order'].get()
+        bandpass(y_data, lowcut, highcut, fps, order)
     else:
-        y_data[1].append(None)
+        y_data['bandpass'].append(None)
     
     # Smooth signal with Savitzky-Golay filtering
-    if filter_settings[2]['use'].get():
-        window = filter_settings[2]['window'].get()
-        polyorder = filter_settings[2]['polyorder'].get()
-        savgol(y_data, window, polyorder)
+    if filter_settings['savgol']['use'].get():
+        window = filter_settings['savgol']['window'].get()
+        polyorder = filter_settings['savgol']['polyorder'].get()
+        savgol(y_data, filter_settings, window, polyorder)
     else:
-        y_data[2].append(None)
+        y_data['savgol'].append(None)
 
 def calculate_bpm(x_data, y_data, filter_settings):
     most_filtered = 0
-    # Check which level of filtering is the latest one that is toggled on.
-    for i in range(len(filter_settings)):
-        if filter_settings[i]['use'].get():
-            most_filtered = i
+    # Check which level of filtering is the last one that is toggled on.
+    if filter_settings['savgol']['use'].get():
+        most_filtered = 'savgol'
+    elif filter_settings['bandpass']['use'].get():
+        most_filtered = 'bandpass'
+    else:
+        most_filtered = 'raw'
 
     if len(y_data[most_filtered]) > 30:  # Ensure enough data for peak detection
         peaks, _ = find_peaks(y_data[most_filtered][-30:], distance=3)  # Adjust 'distance' based on expected heart rate

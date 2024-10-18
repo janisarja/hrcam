@@ -11,13 +11,19 @@ def main():
         print("Error: Could not open video.")
         exit()
 
+    fps = 9
+
     x_data = []
-    y_data = [[], [], []]
+    y_data = {
+        'raw': [],
+        'bandpass': [],
+        'savgol': [],
+        'bpm': []
+    }
 
     # Default values for each filter parameters.
-    filter_settings = []
-
-    median_blur_settings = {'use': tk.BooleanVar(value=True)}
+    median_blur_settings = {
+        'use': tk.BooleanVar(value=True)}
     bandpass_settings = {
         'use': tk.BooleanVar(value=True), 
         'lowcut': tk.StringVar(value=0.7), 
@@ -28,17 +34,25 @@ def main():
         'window': tk.IntVar(value=31), 
         'polyorder': tk.IntVar(value=3)}
 
-    filter_settings.append(median_blur_settings)
-    filter_settings.append(bandpass_settings)
-    filter_settings.append(savgol_settings)
+    filter_settings = {
+        'blur': median_blur_settings,
+        'bandpass': bandpass_settings,
+        'savgol': savgol_settings
+    }
 
     video_canvas, roi_canvas, plot_grid_frame, heart_rate_label, hr_plot = setup_gui(root, filter_settings)
 
-    plots = create_plots(plot_grid_frame, filter_settings)
+    plot_list = create_plots(plot_grid_frame, filter_settings)
+    plots = {
+        'raw': plot_list[0],
+        'bandpass': plot_list[1],
+        'savgol': plot_list[2],
+        'bpm': hr_plot
+    }
 
     start_time = time.time()
 
-    update_gui(root, cap, video_canvas, roi_canvas, plots, start_time, x_data, y_data, filter_settings, heart_rate_label, hr_plot)
+    update_gui(root, cap, video_canvas, roi_canvas, plots, start_time, x_data, y_data, filter_settings, heart_rate_label, fps)
 
     root.mainloop()
 

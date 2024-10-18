@@ -17,23 +17,16 @@ class Plot:
         self.canvas_widget = self.canvas.get_tk_widget()
         self.canvas_widget.grid(row=0, column=0, columnspan=2)
 
-        self.x_data = []
-        self.y_data = []
-
-    def update(self, x_value, y_value):
-        # Update plot data
-        self.x_data.append(x_value)
-        self.y_data.append(y_value)
-        
+    def update(self, x_data, y_data): 
         # Update plot line
-        self.line.set_xdata(self.x_data)
-        self.line.set_ydata(self.y_data)
-        self.ax.set_xlim(max(0, x_value - 20), x_value)
+        self.line.set_xdata(x_data)
+        self.line.set_ydata(y_data)
+        self.ax.set_xlim(max(0, x_data[-1] - 20), x_data[-1])
         
         # Update y-axis limits dynamically
-        if len(self.x_data) % 20 == 0:
-            if not None in self.y_data[-50:]:
-                self.ax.set_ylim(min(self.y_data[-50:]) - 1, max(self.y_data[-50:]) + 1)
+        if len(x_data) % 20 == 0:
+            if not None in y_data[-50:]:
+                self.ax.set_ylim(min(y_data[-50:]) - 1, max(y_data[-50:]) + 1)
         
         # Redraw the canvas
         self.canvas.draw()
